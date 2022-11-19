@@ -29,20 +29,20 @@ Future<Uint8List> generateInvoice(
   final lorem = pw.LoremText();
 
   final products = <Product>[
-    Product('19874', lorem.sentence(4), 3.99, 2),
-    Product('98452', lorem.sentence(6), 15, 2),
-    Product('28375', lorem.sentence(4), 6.95, 3),
-    Product('95673', lorem.sentence(3), 49.99, 4),
-    Product('23763', lorem.sentence(2), 560.03, 1),
-    Product('55209', lorem.sentence(5), 26, 1),
-    Product('09853', lorem.sentence(5), 26, 1),
-    Product('23463', lorem.sentence(5), 34, 1),
-    Product('56783', lorem.sentence(5), 7, 4),
-    Product('78256', lorem.sentence(5), 23, 1),
-    Product('23745', lorem.sentence(5), 94, 1),
-    Product('07834', lorem.sentence(5), 12, 1),
-    Product('23547', lorem.sentence(5), 34, 1),
-    Product('98387', lorem.sentence(5), 7.99, 2),
+    Product('19874', "سیم کابل کت 6", 3.99, 2),
+    // Product('98452', lorem.sentence(6), 15, 2),
+    // Product('28375', lorem.sentence(4), 6.95, 3),
+    // Product('95673', lorem.sentence(3), 49.99, 4),
+    // Product('23763', lorem.sentence(2), 560.03, 1),
+    // Product('55209', lorem.sentence(5), 26, 1),
+    // Product('09853', lorem.sentence(5), 26, 1),
+    // Product('23463', lorem.sentence(5), 34, 1),
+    // Product('56783', lorem.sentence(5), 7, 4),
+    // Product('78256', lorem.sentence(5), 23, 1),
+    // Product('23745', lorem.sentence(5), 94, 1),
+    // Product('07834', lorem.sentence(5), 12, 1),
+    // Product('23547', lorem.sentence(5), 34, 1),
+    // Product('98387', lorem.sentence(5), 7.99, 2),
   ];
 
   final invoice = Invoice(
@@ -97,6 +97,12 @@ class Invoice {
 
   String? _bgShape;
 
+  Future<pw.Font> testFont() async {
+    final font = pw.Font.ttf(
+        await rootBundle.load('assets/fonts/Vazirmatn-Regular.ttf'));
+    return font;
+  }
+
   Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {
     // Create a PDF document.
     final doc = pw.Document();
@@ -104,26 +110,30 @@ class Invoice {
     _logo = await rootBundle.loadString('assets/logo.svg');
     _bgShape = await rootBundle.loadString('assets/invoice.svg');
 
+    //mycode
+    final font = pw.Font.ttf(
+        await rootBundle.load('assets/fonts/Vazirmatn-Regular.ttf'));
+
     // Add page to the PDF
     doc.addPage(
       pw.MultiPage(
-        pageTheme: _buildTheme(
-          pageFormat,
-          await PdfGoogleFonts.robotoRegular(),
-          await PdfGoogleFonts.robotoBold(),
-          await PdfGoogleFonts.robotoItalic(),
-        ),
-        header: _buildHeader,
-        footer: _buildFooter,
-        build: (context) => [
-          _contentHeader(context),
-          _contentTable(context),
-          pw.SizedBox(height: 20),
-          _contentFooter(context),
-          pw.SizedBox(height: 20),
-          _termsAndConditions(context),
-        ],
-      ),
+          pageTheme: _buildTheme(
+            pageFormat,
+            await PdfGoogleFonts.robotoRegular(),
+            await PdfGoogleFonts.robotoBold(),
+            await PdfGoogleFonts.robotoItalic(),
+          ),
+          header: _buildHeader,
+          footer: _buildFooter,
+          build: (context) => [
+                _contentHeader(context),
+                _contentTable(context, font),
+                pw.SizedBox(height: 20),
+                _contentFooter(context),
+                pw.SizedBox(height: 20),
+                _termsAndConditions(context),
+              ],
+          textDirection: pw.TextDirection.rtl),
     );
 
     // Return the PDF file content
@@ -442,14 +452,8 @@ class Invoice {
     );
   }
 
-  pw.Widget _contentTable(pw.Context context) {
-    const tableHeaders = [
-      'SKU#',
-      'Item Description',
-      'Price',
-      'Quantity',
-      'Total'
-    ];
+  pw.Widget _contentTable(pw.Context context, pw.Font font) {
+    const tableHeaders = ['یسب#', 'توضیحات آیتم', 'یب', 'یب', 'یب'];
 
     return pw.Table.fromTextArray(
       border: null,
@@ -471,6 +475,7 @@ class Invoice {
         color: _baseTextColor,
         fontSize: 10,
         fontWeight: pw.FontWeight.bold,
+        font: font,
       ),
       cellStyle: const pw.TextStyle(
         color: _darkColor,

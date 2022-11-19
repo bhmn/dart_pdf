@@ -34,6 +34,17 @@ flutter:
   assets:
     - assets/
 
+  fonts:
+    - family: VazirRegular
+      fonts:
+        - asset: assets/fonts/Vazirmatn-Regular.ttf
+        - asset: assets/fonts/Vazirmatn-Medium.ttf
+          style: normal
+    - family: VazirBold
+      fonts:
+        - asset: assets/fonts/Vazirmatn-Bold.ttf
+          weight: 700
+
 flutter_icons:
   image_path: "app-logo.png"
   remove_alpha_ios: true

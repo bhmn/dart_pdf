@@ -35,6 +35,29 @@ Future<Uint8List> generateInvoice(
     Product('19874', "سیم کابل کت 6", 3.99, 2),
     Product('19874', "سیم  کت 6", 3.99, 2),
     Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
+    Product('19874', "سیم   6", 3.99, 2),
 
     // Product('98452', lorem.sentence(6), 15, 2),
     // Product('28375', lorem.sentence(4), 6.95, 3),
@@ -138,9 +161,9 @@ class Invoice {
         //       await rootBundle.load('assets/fonts/Vazirmatn-Regular.ttf')),
         // ),
         header: _buildHeader,
-        footer: _buildFooter,
+        // footer: _buildFooter,
         build: (context) => [
-          _contentHeader(context),
+          // _contentHeader(context),
           _contentTable(context),
           pw.SizedBox(height: 10),
           _contentFooter(context),
@@ -158,75 +181,189 @@ class Invoice {
   pw.Widget _buildHeader(pw.Context context) {
     return pw.Column(
       children: [
-        pw.Row(
+        pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
-            pw.Expanded(
-              child: pw.Column(
-                children: [
-                  pw.Container(
-                    height: 60,
-                    padding: const pw.EdgeInsets.all(5.0),
-                    alignment: pw.Alignment.center,
-                    child: pw.Text('فرم ارسال کالا',
+            pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.end, children: [
+              pw.Expanded(
+                child: pw.Column(
+                  children: [
+                    pw.Container(
+                      height: 60,
+                      padding: const pw.EdgeInsets.all(5.0),
+                      alignment: pw.Alignment.center,
+                      child: pw.Text('فرم ارسال کالا',
+                          style: pw.TextStyle(
+                              color: baseColor,
+                              fontWeight: pw.FontWeight.bold,
+                              fontSize: 22,
+                              font: myFont),
+                          textAlign: pw.TextAlign.justify),
+                    ),
+                  ],
+                ),
+              ),
+              pw.Expanded(
+                child: pw.Column(
+                  mainAxisSize: pw.MainAxisSize.min,
+                  children: [
+                    pw.Container(
+                      alignment: pw.Alignment.center,
+                      padding: const pw.EdgeInsets.all(5.0),
+                      height: 72,
+                      child: _logo != null
+                          ? pw.SvgImage(svg: _logo!)
+                          : pw.PdfLogo(),
+                      // pw.Image(myLogo!)
+                    ),
+                    // pw.Container(
+                    //   color: baseColor,
+                    //   padding: pw.EdgeInsets.only(top: 3),
+                    // ),
+                    pw.Container(
+                      decoration: pw.BoxDecoration(
+                        borderRadius:
+                            const pw.BorderRadius.all(pw.Radius.circular(25)),
+                        color: accentColor,
+                      ),
+                      padding: const pw.EdgeInsets.only(
+                          left: 40, top: 10, bottom: 10, right: 20),
+                      alignment: pw.Alignment.center,
+                      height: 40,
+                      child: pw.DefaultTextStyle(
                         style: pw.TextStyle(
-                            color: baseColor,
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 20,
-                            font: myFont),
-                        textAlign: pw.TextAlign.justify),
-                  ),
-                  pw.Container(
-                    decoration: pw.BoxDecoration(
-                      borderRadius:
-                          const pw.BorderRadius.all(pw.Radius.circular(2)),
-                      color: accentColor,
+                          color: _accentTextColor,
+                          fontSize: 12,
+                        ),
+                        child: pw.GridView(
+                          crossAxisCount: 1,
+                          children: [
+                            pw.Text(
+                              'مهندسین مشاور ارتباط گستران شرق',
+                              style: pw.TextStyle(font: myFont),
+                            ),
+                            // pw.Text(invoiceNumber),
+                            // pw.Text('Date:'),
+                            // pw.Text(_formatDate(DateTime.now())),
+                          ],
+                        ),
+                      ),
                     ),
-                    padding: const pw.EdgeInsets.only(
-                        left: 40, top: 10, bottom: 10, right: 20),
-                    alignment: pw.Alignment.center,
-                    height: 40,
-                    child: pw.DefaultTextStyle(
+                  ],
+                ),
+              ),
+            ]),
+            pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Expanded(
+                  child: pw.Container(
+                    margin: const pw.EdgeInsets.symmetric(horizontal: 20),
+                    height: 20,
+                    child: pw.FittedBox(
+                      child: pw.Text(
+                        'تاریخ: ${_formatCurrency(_grandTotal)}',
+                        style: pw.TextStyle(
+                          color: baseColor,
+                          fontStyle: pw.FontStyle.normal,
+                          fontSize: 15,
+                          font: myFont,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                pw.Expanded(
+                  child: pw.Container(
+                    margin: const pw.EdgeInsets.symmetric(horizontal: 20),
+                    height: 20,
+                    child: pw.FittedBox(
+                      child: pw.Text(
+                        'شماره: ${_formatCurrency(_grandTotal)}',
+                        style: pw.TextStyle(
+                          color: baseColor,
+                          fontStyle: pw.FontStyle.normal,
+                          fontSize: 15,
+                          font: myFont,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+              pw.Expanded(
+                child: pw.Container(
+                  margin: const pw.EdgeInsets.symmetric(horizontal: 20),
+                  height: 20,
+                  child: pw.FittedBox(
+                    child: pw.Text(
+                      'گیرنده:',
                       style: pw.TextStyle(
-                        color: _accentTextColor,
-                        fontSize: 12,
-                      ),
-                      child: pw.GridView(
-                        crossAxisCount: 1,
-                        children: [
-                          pw.Text(
-                            'مهندسین مشاور ارتباط گستران شرق',
-                            style: pw.TextStyle(font: myFont),
-                          ),
-                          // pw.Text(invoiceNumber),
-                          // pw.Text('Date:'),
-                          // pw.Text(_formatDate(DateTime.now())),
-                        ],
+                        color: baseColor,
+                        fontStyle: pw.FontStyle.normal,
+                        fontSize: 15,
+                        font: myFont,
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-            pw.Expanded(
-              child: pw.Column(
-                mainAxisSize: pw.MainAxisSize.min,
-                children: [
-                  pw.Container(
-                    alignment: pw.Alignment.center,
-                    padding: const pw.EdgeInsets.only(bottom: 8, left: 30),
-                    height: 72,
-                    child:
-                        _logo != null ? pw.SvgImage(svg: _logo!) : pw.PdfLogo(),
-                    // pw.Image(myLogo!)
+              pw.Expanded(
+                child: pw.Container(
+                  margin: const pw.EdgeInsets.symmetric(horizontal: 20),
+                  height: 20,
+                  child: pw.FittedBox(
+                    child: pw.Text(
+                      'فرستنده:',
+                      style: pw.TextStyle(
+                        color: baseColor,
+                        fontStyle: pw.FontStyle.normal,
+                        fontSize: 15,
+                        font: myFont,
+                      ),
+                    ),
                   ),
-                  // pw.Container(
-                  //   color: baseColor,
-                  //   padding: pw.EdgeInsets.only(top: 3),
-                  // ),
-                ],
+                ),
               ),
-            ),
+            ]),
+            pw.Row(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+              pw.Expanded(
+                child: pw.Container(
+                  margin: const pw.EdgeInsets.symmetric(horizontal: 20),
+                  height: 20,
+                  child: pw.FittedBox(
+                    child: pw.Text(
+                      'تاریخ: ${_formatCurrency(_grandTotal)}',
+                      style: pw.TextStyle(
+                        color: baseColor,
+                        fontStyle: pw.FontStyle.normal,
+                        fontSize: 15,
+                        font: myFont,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              pw.Expanded(
+                child: pw.Container(
+                  margin: const pw.EdgeInsets.symmetric(horizontal: 20),
+                  height: 20,
+                  child: pw.FittedBox(
+                    child: pw.Text(
+                      'شماره: ${_formatCurrency(_grandTotal)}',
+                      style: pw.TextStyle(
+                        color: baseColor,
+                        fontStyle: pw.FontStyle.normal,
+                        fontSize: 15,
+                        font: myFont,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ]),
           ],
         ),
         if (context.pageNumber > 1) pw.SizedBox(height: 20)

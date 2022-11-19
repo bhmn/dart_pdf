@@ -12,12 +12,12 @@ import 'examples/report.dart';
 import 'examples/resume.dart';
 
 const examples = <Example>[
-  Example('RÉSUMÉ', 'resume.dart', generateResume),
-  Example('DOCUMENT', 'document.dart', generateDocument),
+  // Example('RÉSUMÉ', 'resume.dart', generateResume),
+  // Example('DOCUMENT', 'document.dart', generateDocument),
   Example('INVOICE', 'invoice.dart', generateInvoice),
-  Example('REPORT', 'report.dart', generateReport),
-  Example('CALENDAR', 'calendar.dart', generateCalendar),
-  Example('CERTIFICATE', 'certificate.dart', generateCertificate, true),
+  // Example('REPORT', 'report.dart', generateReport),
+  // Example('CALENDAR', 'calendar.dart', generateCalendar),
+  // Example('CERTIFICATE', 'certificate.dart', generateCertificate, true),
 ];
 
 typedef LayoutCallbackWithData = Future<Uint8List> Function(

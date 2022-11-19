@@ -15,6 +15,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app.dart';
 
@@ -32,6 +33,17 @@ class App extends StatelessWidget {
     );
 
     return MaterialApp(
+      // ignore: prefer_const_literals_to_create_immutables
+      localizationsDelegates: [
+        GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      // ignore: prefer_const_literals_to_create_immutables
+      supportedLocales: [
+        const Locale('fa', 'IR'), // OR Locale('ar', 'AE') OR Other RTL locales
+      ],
+      locale: const Locale('fa', "IR"),
       theme: ThemeData.light().copyWith(scrollbarTheme: scrollbarTheme),
       darkTheme: ThemeData.dark().copyWith(scrollbarTheme: scrollbarTheme),
       title: 'Flutter PDF Demo',

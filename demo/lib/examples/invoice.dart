@@ -25,10 +25,10 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:image/image.dart' as im;
 
-import '../data.dart';
+import '../data_send_product.dart';
 
 Future<Uint8List> generateInvoice(
-    PdfPageFormat pageFormat, CustomData data1) async {
+    PdfPageFormat pageFormat, SendProductData data1) async {
   final lorem = pw.LoremText();
 
   final products = <Product>[
@@ -128,9 +128,10 @@ class Invoice {
 
   pw.Font? myFont;
   pw.ImageProvider? myLogo;
-  CustomData? data;
+  SendProductData? data;
 
-  Future<Uint8List> buildPdf(PdfPageFormat pageFormat, CustomData data1) async {
+  Future<Uint8List> buildPdf(
+      PdfPageFormat pageFormat, SendProductData data1) async {
     data = data1;
     // Create a PDF document.
     final doc = pw.Document();
@@ -142,7 +143,7 @@ class Invoice {
 
     //mycode
     final font = pw.Font.ttf(
-        await rootBundle.load('assets/fonts/Vazirmatn-Regular.ttf'));
+        await rootBundle.load('assets/fonts/Vazirmatn-FD-Regular.ttf'));
     myFont = font;
     final imageGGG = pw.MemoryImage(
         (await rootBundle.load('assets/application-icon.png'))
@@ -156,11 +157,11 @@ class Invoice {
         // pageTheme: _buildTheme(
         //   pageFormat,
         //   pw.Font.ttf(
-        //       await rootBundle.load('assets/fonts/Vazirmatn-Regular.ttf')),
+        //       await rootBundle.load('assets/fonts/Vazirmatn-FD-Regular.ttf')),
         //   pw.Font.ttf(
-        //       await rootBundle.load('assets/fonts/Vazirmatn-Regular.ttf')),
+        //       await rootBundle.load('assets/fonts/Vazirmatn-FD-Regular.ttf')),
         //   pw.Font.ttf(
-        //       await rootBundle.load('assets/fonts/Vazirmatn-Regular.ttf')),
+        //       await rootBundle.load('assets/fonts/Vazirmatn-FD-Regular.ttf')),
         // ),
         header: _buildHeader,
         // footer: _buildFooter,
@@ -264,7 +265,7 @@ class Invoice {
                     height: 20,
                     child: pw.FittedBox(
                       child: pw.Text(
-                        'تاریخ: ${_formatCurrency(_grandTotal)}',
+                        'تاریخ: ${data?.formDate}',
                         style: pw.TextStyle(
                           color: baseColor,
                           fontStyle: pw.FontStyle.normal,
@@ -281,7 +282,7 @@ class Invoice {
                     height: 20,
                     child: pw.FittedBox(
                       child: pw.Text(
-                        'شماره: ${data?.name}',
+                        'شماره: ${data?.formNumber}',
                         style: pw.TextStyle(
                           color: baseColor,
                           fontStyle: pw.FontStyle.normal,

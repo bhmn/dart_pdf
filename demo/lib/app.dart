@@ -28,7 +28,7 @@ import 'package:printing/printing.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:url_launcher/url_launcher.dart' as ul;
 
-import 'data.dart';
+import 'data_send_product.dart';
 import 'examples.dart';
 
 class MyApp extends StatefulWidget {
@@ -47,7 +47,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   PrintingInfo? printingInfo;
 
-  var _data = const CustomData();
+  var _data = const SendProductData();
   var _hasData = false;
   var _pending = false;
 
@@ -105,7 +105,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       askName(context).then((value) {
         if (value != null) {
           setState(() {
-            _data = CustomData(name: value[0]);
+            _data = SendProductData(formNumber: value[0], formDate: value[2]);
             _hasData = true;
             _pending = false;
           });
@@ -255,15 +255,21 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         lastDate: Jalali(1450, 9),
         locale: const Locale('fa', 'IR'),
       );
-      final label = picked?.formatFullDate();
+      //final label = picked?.formatFullDate();
 
-      return label;
-/////////////////////////Example 2////////////////////////////
-      // final picked = await showTimePicker(
+      return (picked?.year.toString())! +
+          '/' +
+          (picked?.month.toString())! +
+          '/' +
+          (picked?.day.toString())!;
+/////////////////////////Example 2 select time////////////////////////////
+      // final picked1 = await showTimePicker(
       //   context: context,
       //   initialTime: TimeOfDay.now(),
       // );
-      // final label = picked?.persianFormat(context);
+      // final label1 = picked1?.persianFormat(context);
+
+      // return label1;
 /////////////////////////Example 3 date and time////////////////////////////
       /* final pickedDate = await showModalBottomSheet<Jalali>(
         context: context,
@@ -282,7 +288,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                         child: Text(
                           'لغو',
                           style: TextStyle(
-                            fontFamily: 'Vazirmatn',
+                            fontFamily: 'VazirRegular',
                           ),
                         ),
                         onPressed: () {
@@ -293,7 +299,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                         child: Text(
                           'تایید',
                           style: TextStyle(
-                            fontFamily: 'Vazirmatn',
+                            fontFamily: 'VazirRegular',
                           ),
                         ),
                         onPressed: () {
@@ -313,7 +319,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                     data: CupertinoThemeData(
                       textTheme: const CupertinoTextThemeData(
                           dateTimePickerTextStyle: TextStyle(
-                              fontFamily: "Vazirmatn", color: Colors.black38),
+                              fontFamily: "VazirRegular", color: Colors.black38),
                           primaryColor: Colors.black54),
                     ),
                     child: PCupertinoDatePicker(
@@ -331,8 +337,8 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       );
       */
 
-      /////////////////////////Example 4////////////////////////////
-      // var picked = await showPersianDateRangePicker(
+      /////////////////////////Example 4 select from date to date////////////////////////////
+      // var picked1 = await showPersianDateRangePicker(
       //   context: context,
       //   initialEntryMode: PDatePickerEntryMode.input,
       //   initialDateRange: JalaliRange(
@@ -390,13 +396,16 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         controller: usernameController,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return 'لطفا نام کاربری خود را وارد کنید';
+                                            return 'لطفا شماره فرم را وارد کنید';
                                           }
                                           return null;
                                         },
                                         decoration: const InputDecoration(
                                           border: UnderlineInputBorder(),
-                                          labelText: 'نام کاربری',
+                                          labelText: 'شماره فرم: ',
+                                        ),
+                                        style: const TextStyle(
+                                          fontFamily: 'VazirRegular',
                                         ),
                                       ),
                                     ),
@@ -415,6 +424,9 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                           border: UnderlineInputBorder(),
                                           labelText: 'کلمه عبور',
                                         ),
+                                        style: const TextStyle(
+                                          fontFamily: 'VazirRegular',
+                                        ),
                                       ),
                                     ),
                                     Padding(
@@ -429,7 +441,12 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                             });
                                           });
                                         },
-                                        child: Text(textDate),
+                                        child: Text(
+                                          textDate,
+                                          style: const TextStyle(
+                                            fontFamily: 'VazirRegular',
+                                          ),
+                                        ),
                                       ),
                                     ),
                                     Padding(
@@ -437,7 +454,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                           horizontal: 8, vertical: 16),
                                       child: Text(textDate,
                                           style: const TextStyle(
-                                              fontFamily: 'Vazirmatn',
+                                              fontFamily: 'VazirRegular',
                                               color: Colors.white)),
                                     ),
                                     Padding(
@@ -454,6 +471,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                             Navigator.of(context).pop([
                                               usernameController.text,
                                               passwordController.text,
+                                              textDate
                                             ]);
                                           }
                                         },

@@ -21,10 +21,10 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import '../data.dart';
+import '../data_send_product.dart';
 
 Future<Uint8List> generateReport(
-    PdfPageFormat pageFormat, CustomData data) async {
+    PdfPageFormat pageFormat, SendProductData data) async {
   const tableHeaders = ['Category', 'Budget', 'Expense', 'Result'];
 
   const dataTable = [

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:pdf/pdf.dart';
 
-import 'data.dart';
+import 'data_send_product.dart';
 import 'examples/calendar.dart';
 import 'examples/certificate.dart';
 import 'examples/document.dart';
@@ -21,7 +21,7 @@ const examples = <Example>[
 ];
 
 typedef LayoutCallbackWithData = Future<Uint8List> Function(
-    PdfPageFormat pageFormat, CustomData data);
+    PdfPageFormat pageFormat, SendProductData data);
 
 class Example {
   const Example(this.name, this.file, this.builder, [this.needsData = false]);

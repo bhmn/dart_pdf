@@ -22,7 +22,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:printing/printing.dart';
 
-import '../data.dart';
+import '../data_send_product.dart';
 
 class Calendar extends StatelessWidget {
   Calendar({
@@ -180,7 +180,7 @@ class Calendar extends StatelessWidget {
 }
 
 Future<Uint8List> generateCalendar(
-    PdfPageFormat pageFormat, CustomData data) async {
+    PdfPageFormat pageFormat, SendProductData data) async {
   //Create a PDF document.
   final document = Document();
   final date = DateTime.now();

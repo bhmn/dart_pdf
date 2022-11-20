@@ -23,10 +23,10 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:vector_math/vector_math_64.dart';
 
-import '../data.dart';
+import '../data_send_product.dart';
 
 Future<Uint8List> generateCertificate(
-    PdfPageFormat pageFormat, CustomData data) async {
+    PdfPageFormat pageFormat, SendProductData data) async {
   final lorem = pw.LoremText();
   final pdf = pw.Document();
 
@@ -79,7 +79,7 @@ Future<Uint8List> generateCertificate(
             child: pw.Divider(color: PdfColors.grey, thickness: 1.5),
           ),
           pw.Text(
-            data.name,
+            data.formDate,
             textAlign: pw.TextAlign.center,
             style: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,

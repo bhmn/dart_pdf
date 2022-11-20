@@ -21,10 +21,10 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import '../data.dart';
+import '../data_send_product.dart';
 
 Future<Uint8List> generateDocument(
-    PdfPageFormat format, CustomData data) async {
+    PdfPageFormat format, SendProductData data) async {
   final doc = pw.Document(pageMode: PdfPageMode.outlines);
 
   final font1 = await PdfGoogleFonts.openSansRegular();

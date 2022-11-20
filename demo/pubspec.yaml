@@ -40,12 +40,12 @@ flutter:
   fonts:
     - family: VazirRegular
       fonts:
-        - asset: assets/fonts/Vazirmatn-Regular.ttf
-        - asset: assets/fonts/Vazirmatn-Medium.ttf
+        - asset: assets/fonts/Vazirmatn-FD-Regular.ttf
+        - asset: assets/fonts/Vazirmatn-FD-Medium.ttf
           style: normal
     - family: VazirBold
       fonts:
-        - asset: assets/fonts/Vazirmatn-Bold.ttf
+        - asset: assets/fonts/Vazirmatn-FD-Bold.ttf
           weight: 700
 
 flutter_icons:

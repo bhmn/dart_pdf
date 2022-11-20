@@ -15,6 +15,7 @@
  */
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -28,6 +29,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:printing_demo/my_widgets.dart';
+import 'package:signature/signature.dart';
 import 'package:url_launcher/url_launcher.dart' as ul;
 
 import 'data_send_product.dart';
@@ -47,6 +49,22 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   TabController? _tabController;
   var textDate = 'انتخاب تاریخ';
   List<Product> products = <Product>[];
+  late final Uint8List imageInUnit8ListSender;
+  late final Uint8List imageInUnit8ListReceiver;
+
+  // Initialise a controller. It will contains signature points, stroke width and pen color.
+// It will allow you to interact with the widget
+  final SignatureController _controllerSignatureSender = SignatureController(
+    penStrokeWidth: 5,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
+
+  final SignatureController _controllerSignatureReceiver = SignatureController(
+    penStrokeWidth: 5,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white,
+  );
 
   PrintingInfo? printingInfo;
 
@@ -63,6 +81,13 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+  }
+
+  //DONT FORGET TO DISPOSE IT IN THE `dispose()` METHOD OF STATEFUL WIDGETS
+  @override
+  void dispose() {
+    _controllerSignatureSender.dispose();
+    super.dispose();
   }
 
   Future<void> _init() async {
@@ -113,7 +138,9 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 formDate: value[1],
                 formReceiver: value[2],
                 products: products,
-                sum: int.parse(value[3]));
+                sum: int.parse(value[3]),
+                imageInUnit8ListSender: imageInUnit8ListSender,
+                imageInUnit8ListReceiver: imageInUnit8ListReceiver);
             _hasData = true;
             _pending = false;
           });
@@ -251,6 +278,21 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     final _formKeyProduct = GlobalKey<FormState>();
 
     var selectedDate = DateTime.now();
+
+    // INITIALIZE. RESULT IS A WIDGET, SO IT CAN BE DIRECTLY USED IN BUILD METHOD
+    final _signatureCanvasSender = Signature(
+      controller: _controllerSignatureSender,
+      width: 200,
+      height: 200,
+      backgroundColor: Colors.white,
+    );
+
+    final _signatureCanvasReceiver = Signature(
+      controller: _controllerSignatureReceiver,
+      width: 200,
+      height: 200,
+      backgroundColor: Colors.white,
+    );
 
     Padding _myTextFieldWidget(TextEditingController controller, String label) {
       return Padding(
@@ -444,6 +486,12 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     //   });
     // }
 
+    String uint8ListTob64(Uint8List uint8list) {
+      var base64String = base64Encode(uint8list);
+      var header = 'data:image/png;base64,';
+      return header + base64String;
+    }
+
     /// Display date picker.
     return showGeneralDialog(
         context: context,
@@ -521,175 +569,313 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                   color: Colors.amberAccent,
                                 ),
                                 Form(
-                                    key: _formKeyProduct,
-                                    child: Center(
-                                      child: Column(
-                                        children: [
-                                          const Text('مشخصات کالا'),
-                                          _myTextFieldWidget(
-                                            productController,
-                                            'شرح کالا',
-                                          ),
-                                          _myTextFieldNumberWidget(
-                                            productNumbersController,
-                                            'تعداد',
-                                          ),
-                                          _myTextFieldWidget(
-                                            productDescController,
-                                            'توضیحات',
-                                          ),
-                                          _myElevatedButtonWidget(
-                                            'افزودن به لیست',
-                                            () {
-                                              if (!_formKeyProduct.currentState!
-                                                  .validate()) {
-                                                return;
+                                  key: _formKeyProduct,
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        const Text('مشخصات کالا'),
+                                        _myTextFieldWidget(
+                                          productController,
+                                          'شرح کالا',
+                                        ),
+                                        _myTextFieldNumberWidget(
+                                          productNumbersController,
+                                          'تعداد',
+                                        ),
+                                        _myTextFieldWidget(
+                                          productDescController,
+                                          'توضیحات',
+                                        ),
+                                        _myElevatedButtonWidget(
+                                          'افزودن به لیست',
+                                          () {
+                                            if (!_formKeyProduct.currentState!
+                                                .validate()) {
+                                              return;
+                                            }
+
+                                            setState(() {
+                                              products.add(
+                                                Product(
+                                                    rowNumber:
+                                                        (products.length + 1)
+                                                            .toString(),
+                                                    product:
+                                                        productController.text,
+                                                    productNumber: int.parse(
+                                                        productNumbersController
+                                                            .text),
+                                                    productDescription:
+                                                        productDescController
+                                                            .text),
+                                              );
+                                              // productController.clear();
+                                              // productNumbersController
+                                              //     .clear();
+                                              // productDescController.clear();
+
+                                              if (kDebugMode) {
+                                                print(products[0].product);
                                               }
-
-                                              setState(() {
-                                                products.add(
-                                                  Product(
-                                                      rowNumber:
-                                                          (products.length + 1)
-                                                              .toString(),
-                                                      product: productController
-                                                          .text,
-                                                      productNumber: int.parse(
-                                                          productNumbersController
-                                                              .text),
-                                                      productDescription:
-                                                          productDescController
-                                                              .text),
-                                                );
-                                                productController.clear();
-                                                productNumbersController
-                                                    .clear();
-                                                productDescController.clear();
-
-                                                if (kDebugMode) {
-                                                  print(products[0].product);
-                                                }
-                                              });
-                                            },
-                                            height: 40,
-                                            width: 150,
-                                          ),
-                                          ListView.builder(
-                                            shrinkWrap: true,
-                                            physics:
-                                                const ClampingScrollPhysics(),
-                                            scrollDirection: Axis.vertical,
-                                            itemCount: products.length,
-                                            itemBuilder:
-                                                (BuildContext ctxt, int index) {
-                                              /// return Text(entries[index]);
-                                              // ignore: prefer_const_constructors
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(2.0),
-                                                child: Card(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20.0),
-                                                  ),
-                                                  elevation: 2.0,
-                                                  // ignore: prefer_const_constructors
-                                                  child: InkWell(
-                                                    splashColor: Colors.blue
-                                                        .withAlpha(30),
-                                                    onTap: () {},
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              10.0),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: <Widget>[
-                                                          Column(
-                                                            // ignore: prefer_const_literals_to_create_immutables
-                                                            children: <Widget>[
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                // ignore: prefer_const_literals_to_create_immutables
-                                                                children: <
-                                                                    Widget>[
-                                                                  generalText(
-                                                                      'شرح کالا: '),
-                                                                  generalText(
-                                                                      products[
-                                                                              index]
-                                                                          .product,
-                                                                      color: Colors
-                                                                          .blue),
-                                                                ],
-                                                              ),
-                                                              Row(
-                                                                // ignore: prefer_const_literals_to_create_immutables
-                                                                children: <
-                                                                    Widget>[
-                                                                  generalText(
-                                                                    'تعداد: ',
-                                                                  ),
-                                                                  generalText(
+                                            });
+                                          },
+                                          height: 40,
+                                          width: 150,
+                                        ),
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const ClampingScrollPhysics(),
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: products.length,
+                                          itemBuilder:
+                                              (BuildContext ctxt, int index) {
+                                            /// return Text(entries[index]);
+                                            // ignore: prefer_const_constructors
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.all(2.0),
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
+                                                ),
+                                                elevation: 2.0,
+                                                // ignore: prefer_const_constructors
+                                                child: InkWell(
+                                                  splashColor:
+                                                      Colors.blue.withAlpha(30),
+                                                  onTap: () {},
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10.0),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: <Widget>[
+                                                        Column(
+                                                          // ignore: prefer_const_literals_to_create_immutables
+                                                          children: <Widget>[
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              // ignore: prefer_const_literals_to_create_immutables
+                                                              children: <
+                                                                  Widget>[
+                                                                generalText(
+                                                                    'شرح کالا: '),
+                                                                generalText(
                                                                     products[
                                                                             index]
-                                                                        .productNumber
-                                                                        .toString(),
+                                                                        .product,
                                                                     color: Colors
-                                                                        .blue,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              Row(
-                                                                // ignore: prefer_const_literals_to_create_immutables
-                                                                children: <
-                                                                    Widget>[
-                                                                  generalText(
-                                                                    'توضیحات: ',
-                                                                  ),
-                                                                  generalText(
-                                                                    products[
-                                                                            index]
-                                                                        .productDescription,
-                                                                    color: Colors
-                                                                        .blue,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
+                                                                        .blue),
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              // ignore: prefer_const_literals_to_create_immutables
+                                                              children: <
+                                                                  Widget>[
+                                                                generalText(
+                                                                  'تعداد: ',
+                                                                ),
+                                                                generalText(
+                                                                  products[
+                                                                          index]
+                                                                      .productNumber
+                                                                      .toString(),
+                                                                  color: Colors
+                                                                      .blue,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              // ignore: prefer_const_literals_to_create_immutables
+                                                              children: <
+                                                                  Widget>[
+                                                                generalText(
+                                                                  'توضیحات: ',
+                                                                ),
+                                                                generalText(
+                                                                  products[
+                                                                          index]
+                                                                      .productDescription,
+                                                                  color: Colors
+                                                                      .blue,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ),
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    )),
-                                _myElevatedButtonWidget('ورود', () {
-                                  if (_formKey.currentState!.validate()) {
-                                    if (kDebugMode) {}
-                                    var sum = 0;
-                                    for (var product in products) {
-                                      sum += product.productNumber;
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: generalText(
+                                                  'امضاء تحویل دهنده:',
+                                                  color: Colors.white),
+                                            ),
+                                            _signatureCanvasSender,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                _myElevatedButtonWidget(
+                                                  'پاک کردن',
+                                                  () {
+                                                    // CLEAR CANVAS
+                                                    _controllerSignatureSender
+                                                        .clear();
+                                                  },
+                                                  height: 50,
+                                                  width: 200,
+                                                ),
+                                                _myElevatedButtonWidget(
+                                                  'ذخیره امضاء',
+                                                  () {
+                                                    // EXPORT BYTES AS PNG
+                                                    // The exported image will be limited to the drawn area
+                                                    _controllerSignatureSender
+                                                        .toPngBytes()
+                                                        .then((value) async {
+                                                      // callback variant
+
+                                                      imageInUnit8ListSender =
+                                                          value!; // store unit8List image here ;
+                                                      final appDocDir =
+                                                          await getApplicationDocumentsDirectory();
+                                                      final appDocPath =
+                                                          appDocDir.path;
+                                                      final file1 = File(
+                                                          appDocPath +
+                                                              '/' +
+                                                              'image.png');
+                                                      print(
+                                                          'Save as file ${file1.path} ...');
+                                                      await file1.writeAsBytes(
+                                                          imageInUnit8ListSender!);
+                                                      await OpenFile.open(
+                                                          file1.path);
+
+                                                      // print(uint8ListTob64(value));
+                                                    });
+                                                    // async variant
+                                                  },
+                                                  height: 50,
+                                                  width: 200,
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: generalText(
+                                                  'امضاء تحویل گینده:',
+                                                  color: Colors.white),
+                                            ),
+                                            _signatureCanvasReceiver,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                _myElevatedButtonWidget(
+                                                  'پاک کردن',
+                                                  () {
+                                                    // CLEAR CANVAS
+                                                    _controllerSignatureReceiver
+                                                        .clear();
+                                                  },
+                                                  height: 50,
+                                                  width: 200,
+                                                ),
+                                                _myElevatedButtonWidget(
+                                                  'ذخیره امضاء',
+                                                  () {
+                                                    // EXPORT BYTES AS PNG
+                                                    // The exported image will be limited to the drawn area
+                                                    _controllerSignatureReceiver
+                                                        .toPngBytes()
+                                                        .then((value) async {
+                                                      // callback variant
+
+                                                      imageInUnit8ListReceiver =
+                                                          value!; // store unit8List image here ;
+                                                      final appDocDir =
+                                                          await getApplicationDocumentsDirectory();
+                                                      final appDocPath =
+                                                          appDocDir.path;
+                                                      final file1 = File(
+                                                          appDocPath +
+                                                              '/' +
+                                                              'image1.png');
+                                                      print(
+                                                          'Save as file ${file1.path} ...');
+                                                      await file1.writeAsBytes(
+                                                          imageInUnit8ListReceiver!);
+                                                      await OpenFile.open(
+                                                          file1.path);
+
+                                                      // print(uint8ListTob64(value));
+                                                    });
+                                                    // async variant
+                                                  },
+                                                  height: 50,
+                                                  width: 200,
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                _myElevatedButtonWidget(
+                                  'ثبت و پیش نمایش فرم',
+                                  () {
+                                    if (_formKey.currentState!.validate()) {
+                                      if (kDebugMode) {}
+                                      var sum = 0;
+                                      for (var product in products) {
+                                        sum += product.productNumber;
+                                      }
+                                      print(sum);
+                                      Navigator.of(context).pop([
+                                        formNumberController.text,
+                                        textDate,
+                                        formReceiverController.text,
+                                        sum.toString(),
+                                      ]);
                                     }
-                                    print(sum);
-                                    Navigator.of(context).pop([
-                                      formNumberController.text,
-                                      textDate,
-                                      formReceiverController.text,
-                                      sum.toString(),
-                                    ]);
-                                  }
-                                }),
+                                  },
+                                  height: 50,
+                                  width: 200,
+                                ),
                               ],
                             )
                           ],

@@ -118,13 +118,13 @@ class Invoice {
         //       await rootBundle.load('assets/fonts/Vazirmatn-FD-Regular.ttf')),
         // ),
         header: _buildHeader,
-        // footer: _buildFooter,
+        footer: _buildFooter,
         build: (context) => [
           // _contentHeader(context),
           _contentTable(context),
           pw.SizedBox(height: 10),
-          _contentFooter(context),
-          pw.SizedBox(height: 20),
+          //_contentFooter(context),
+          // pw.SizedBox(height: 20),
           // _termsAndConditions(context),
         ],
         textDirection: pw.TextDirection.rtl,
@@ -329,28 +329,135 @@ class Invoice {
   }
 
   pw.Widget _buildFooter(pw.Context context) {
+    var uint8ListSender = data?.imageInUnit8ListSender;
+    var uint8ListReceiver = data?.imageInUnit8ListReceiver;
+
     return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Container(
-          height: 20,
-          width: 100,
-          child: pw.BarcodeWidget(
-            barcode: pw.Barcode.pdf417(),
-            data: 'Invoice# $invoiceNumber',
-            drawText: false,
-          ),
-        ),
-        pw.Text(
-          'Page ${context.pageNumber}/${context.pagesCount}',
-          style: const pw.TextStyle(
-            fontSize: 12,
-            color: PdfColors.white,
+        pw.Expanded(
+          flex: 1,
+          child: pw.DefaultTextStyle(
+            style: const pw.TextStyle(
+              fontSize: 10,
+              color: _darkColor,
+            ),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Row(children: [
+                  pw.SizedBox(height: 5),
+                  // pw.Divider(color: accentColor),
+                  pw.Expanded(
+                    child: pw.DefaultTextStyle(
+                      style: pw.TextStyle(
+                        color: baseColor,
+                        fontSize: 14,
+                        fontWeight: pw.FontWeight.bold,
+                        font: myFont,
+                      ),
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(data!.sum.toString()),
+                          pw.Text('مجموع:', textAlign: pw.TextAlign.right),
+                        ],
+                      ),
+                    ),
+                  ),
+                ]),
+                pw.Container(
+                  decoration: const pw.BoxDecoration(
+                    border: pw.Border(top: pw.BorderSide(color: _darkColor)),
+                  ),
+                  child: pw.Row(children: [
+                    // pw.SizedBox(height: 5),
+                    pw.Divider(color: accentColor),
+                    pw.Expanded(
+                      child: pw.DefaultTextStyle(
+                        style: pw.TextStyle(
+                          color: baseColor,
+                          fontSize: 14,
+                          fontWeight: pw.FontWeight.bold,
+                          font: myFont,
+                        ),
+                        child: pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text('تحویل گیرنده:',
+                                textAlign: pw.TextAlign.right),
+                            pw.Text('تحویل دهنده:',
+                                textAlign: pw.TextAlign.right),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+                pw.Container(
+                  decoration: const pw.BoxDecoration(
+                    border: pw.Border(top: pw.BorderSide(color: _darkColor)),
+                  ),
+                  child: pw.Row(children: [
+                    pw.SizedBox(height: 5),
+                    pw.Divider(color: accentColor),
+                    pw.Expanded(
+                      child: pw.DefaultTextStyle(
+                        style: pw.TextStyle(
+                          color: baseColor,
+                          fontSize: 14,
+                          fontWeight: pw.FontWeight.bold,
+                          font: myFont,
+                        ),
+                        child: pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(10.0),
+                              child: pw.Image(
+                                pw.MemoryImage(uint8ListReceiver!),
+                              ),
+                            ),
+                            pw.Padding(
+                              padding: const pw.EdgeInsets.all(10.0),
+                              child: pw.Image(
+                                pw.MemoryImage(uint8ListSender!),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ]),
+                )
+              ],
+            ),
           ),
         ),
       ],
     );
+    // return pw.Row(
+    //   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+    //   crossAxisAlignment: pw.CrossAxisAlignment.end,
+    //   children: [
+    //     pw.Container(
+    //       height: 20,
+    //       width: 100,
+    //       child: pw.BarcodeWidget(
+    //         barcode: pw.Barcode.pdf417(),
+    //         data: 'Invoice# $invoiceNumber',
+    //         drawText: false,
+    //       ),
+    //     ),
+    //     pw.Text(
+    //       'Page ${context.pageNumber}/${context.pagesCount}',
+    //       style: const pw.TextStyle(
+    //         fontSize: 12,
+    //         color: PdfColors.white,
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 
   pw.PageTheme _buildTheme(
@@ -588,7 +695,7 @@ class Invoice {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Container(
-                decoration: pw.BoxDecoration(
+                decoration: const pw.BoxDecoration(
                   border: pw.Border(top: pw.BorderSide(color: _darkColor)),
                 ),
                 padding: const pw.EdgeInsets.only(top: 10, bottom: 4),

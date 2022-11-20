@@ -6,6 +6,6 @@ Widget generalText(String text,
     {double fontSize = 18, Color color = Colors.black}) {
   return Text(
     text,
-    style: TextStyle(fontSize: fontSize, color: color),
+    style: TextStyle(fontFamily: 'VazirBold', fontSize: fontSize, color: color),
   );
 }

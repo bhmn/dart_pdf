@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class SendProductData {
   const SendProductData({
     this.formNumber = '',
@@ -5,6 +7,8 @@ class SendProductData {
     this.formReceiver = '',
     this.products = const <Product>[],
     this.sum = 0,
+    this.imageInUnit8ListSender,
+    this.imageInUnit8ListReceiver,
   });
 
   final String formNumber;
@@ -12,6 +16,8 @@ class SendProductData {
   final String formReceiver;
   final List<Product> products;
   final int sum;
+  final Uint8List? imageInUnit8ListSender;
+  final Uint8List? imageInUnit8ListReceiver;
 }
 
 class Product {

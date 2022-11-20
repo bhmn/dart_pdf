@@ -17,6 +17,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
@@ -24,6 +25,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:url_launcher/url_launcher.dart' as ul;
 
 import 'data.dart';
@@ -41,6 +43,7 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   int _tab = 0;
   TabController? _tabController;
+  var textDate = 'تاریخ';
 
   PrintingInfo? printingInfo;
 
@@ -73,19 +76,46 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           _tab = _tabController!.index;
         });
       }
-      if (examples[_tab].needsData && !_hasData && !_pending) {
-        _pending = true;
-        askName(context).then((value) {
-          if (value != null) {
-            setState(() {
-              _data = CustomData(name: value);
-              _hasData = true;
-              _pending = false;
-            });
-          }
-        });
-      }
+      // if (examples[_tab].needsData && !_hasData && !_pending) {
+      //   if (kDebugMode) {
+      //     print("Yep");
+      //   }
+      //   _pending = true;
+      //   askName(context).then((value) {
+      //     if (value != null) {
+      //       setState(() {
+      //         _data = CustomData(name: value);
+      //         _hasData = true;
+      //         _pending = false;
+      //       });
+      //     }
+      //   });
+      // } else {
+      //   if (kDebugMode) {
+      //     print("Nope");
+      //   }
+      // }
     });
+
+    if (examples[_tab].needsData && !_hasData && !_pending) {
+      if (kDebugMode) {
+        print("Yep");
+      }
+      _pending = true;
+      askName(context).then((value) {
+        if (value != null) {
+          setState(() {
+            _data = CustomData(name: value[0]);
+            _hasData = true;
+            _pending = false;
+          });
+        }
+      });
+    } else {
+      if (kDebugMode) {
+        print("Nope");
+      }
+    }
 
     setState(() {
       printingInfo = info;
@@ -142,24 +172,27 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter PDF Demo'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: examples.map<Tab>((e) => Tab(text: e.name)).toList(),
-          isScrollable: true,
-        ),
+        // bottom: TabBar(
+        //   controller: _tabController,
+        //   tabs: examples.map<Tab>((e) => Tab(text: e.name)).toList(),
+        //   isScrollable: true,
+        // ),
       ),
       body: PdfPreview(
         maxPageWidth: 700,
+        initialPageFormat: PdfPageFormat.a4,
+        allowSharing: false,
+        canDebug: true,
         build: (format) => examples[_tab].builder(format, _data),
         actions: actions,
         onPrinted: _showPrintedToast,
         onShared: _showSharedToast,
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.deepOrange,
-        onPressed: _showSources,
-        child: const Icon(Icons.code),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: Colors.deepOrange,
+      //   onPressed: _showSources,
+      //   child: const Icon(Icons.code),
+      // ),
     );
   }
 
@@ -171,31 +204,273 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future<String?> askName(BuildContext context) {
-    return showDialog<String>(
-        barrierDismissible: false,
+  Future<List<String>?> askName(BuildContext context) {
+    //   return showDialog<String>(
+    //       barrierDismissible: false,
+    //       context: context,
+    //       builder: (context) {
+    //         final controller = TextEditingController();
+
+    //         return AlertDialog(
+    //           title: const Text('Please type your name:'),
+    //           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+    //           content: TextField(
+    //             decoration: const InputDecoration(hintText: '[your name]'),
+    //             controller: controller,
+    //           ),
+    //           actions: [
+    //             TextButton(
+    //               onPressed: () {
+    //                 if (controller.text != '') {
+    //                   Navigator.pop(context, controller.text);
+    //                 }
+    //               },
+    //               child: const Text('OK'),
+    //             ),
+    //           ],
+    //         );
+    //       });
+    // }
+    final controller = TextEditingController();
+    final usernameController = TextEditingController();
+    final passwordController = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
+    var selectedDate = DateTime.now();
+
+    Future<String?> _selectDate(BuildContext context) async {
+      // final picked = await showDatePicker(
+      //     context: context,
+      //     initialDate: selectedDate,
+      //     firstDate: DateTime(2015, 8),
+      //     lastDate: DateTime(2101));
+      // if (picked != null && picked != selectedDate) {
+      //   setState(() {
+      //     selectedDate = picked;
+      //   });
+      // }
+      final picked = await showPersianDatePicker(
+        context: context,
+        initialDate: Jalali.now(),
+        firstDate: Jalali(1385, 8),
+        lastDate: Jalali(1450, 9),
+        locale: const Locale('fa', 'IR'),
+      );
+      final label = picked?.formatFullDate();
+
+      return label;
+/////////////////////////Example 2////////////////////////////
+      // final picked = await showTimePicker(
+      //   context: context,
+      //   initialTime: TimeOfDay.now(),
+      // );
+      // final label = picked?.persianFormat(context);
+/////////////////////////Example 3 date and time////////////////////////////
+      /* final pickedDate = await showModalBottomSheet<Jalali>(
         context: context,
         builder: (context) {
-          final controller = TextEditingController();
-
-          return AlertDialog(
-            title: const Text('Please type your name:'),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            content: TextField(
-              decoration: const InputDecoration(hintText: '[your name]'),
-              controller: controller,
+          Jalali? tempPickedDate;
+          return Container(
+            height: 250,
+            child: Column(
+              children: <Widget>[
+                Container(
+                  color: Colors.black54,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      CupertinoButton(
+                        child: Text(
+                          'لغو',
+                          style: TextStyle(
+                            fontFamily: 'Vazirmatn',
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      CupertinoButton(
+                        child: Text(
+                          'تایید',
+                          style: TextStyle(
+                            fontFamily: 'Vazirmatn',
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pop(tempPickedDate ?? Jalali.now());
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  height: 0,
+                  thickness: 1,
+                ),
+                Expanded(
+                  child: CupertinoTheme(
+                    data: CupertinoThemeData(
+                      textTheme: const CupertinoTextThemeData(
+                          dateTimePickerTextStyle: TextStyle(
+                              fontFamily: "Vazirmatn", color: Colors.black38),
+                          primaryColor: Colors.black54),
+                    ),
+                    child: PCupertinoDatePicker(
+                      mode: PCupertinoDatePickerMode.dateAndTime,
+                      onDateTimeChanged: (Jalali dateTime) {
+                        tempPickedDate = dateTime;
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  if (controller.text != '') {
-                    Navigator.pop(context, controller.text);
-                  }
-                },
-                child: const Text('OK'),
-              ),
-            ],
           );
+        },
+      );
+      */
+
+      /////////////////////////Example 4////////////////////////////
+      // var picked = await showPersianDateRangePicker(
+      //   context: context,
+      //   initialEntryMode: PDatePickerEntryMode.input,
+      //   initialDateRange: JalaliRange(
+      //     start: Jalali(1400, 1, 2),
+      //     end: Jalali(1400, 1, 10),
+      //   ),
+      //   firstDate: Jalali(1385, 8),
+      //   lastDate: Jalali(1450, 9),
+      // );
+    }
+
+    String _datetime = '';
+    String _format = 'yyyy-mm-dd';
+    String _valuePiker = '';
+
+    void _changeDatetime(int year, int month, int day) {
+      setState(() {
+        _datetime = '$year-$month-$day';
+      });
+    }
+
+    /// Display date picker.
+    return showGeneralDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierLabel:
+            MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        barrierColor: Colors.black45,
+        transitionDuration: const Duration(milliseconds: 200),
+        pageBuilder: (BuildContext buildContext, Animation animation,
+            Animation secondaryAnimation) {
+          return StatefulBuilder(builder: (context, StateSetter setState) {
+            return Scaffold(
+              body: Center(
+                child: Container(
+                  // width: MediaQuery.of(context).size.width - 10,
+                  // height: MediaQuery.of(context).size.height - 80,
+                  padding: const EdgeInsets.all(5.0),
+                  color: Colors.black45,
+                  child: Form(
+                    key: _formKey,
+                    child: Center(
+                      child: ListView(
+                          scrollDirection: Axis.vertical,
+                          children: <Widget>[
+                            Flex(
+                              direction: Axis.vertical,
+                              children: [
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      child: TextFormField(
+                                        controller: usernameController,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'لطفا نام کاربری خود را وارد کنید';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: const InputDecoration(
+                                          border: UnderlineInputBorder(),
+                                          labelText: 'نام کاربری',
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      child: TextFormField(
+                                        controller: passwordController,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'لطفا کلمه عبور خود را وارد کنید';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: const InputDecoration(
+                                          border: UnderlineInputBorder(),
+                                          labelText: 'کلمه عبور',
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          _selectDate(context).then((value) {
+                                            setState(() {
+                                              textDate = value!;
+                                              print(textDate);
+                                            });
+                                          });
+                                        },
+                                        child: Text(textDate),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      child: Text(textDate,
+                                          style: const TextStyle(
+                                              fontFamily: 'Vazirmatn',
+                                              color: Colors.white)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 16),
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            elevation: 2,
+                                            fixedSize: const Size(150, 50)),
+                                        onPressed: () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            if (kDebugMode) {}
+                                            Navigator.of(context).pop([
+                                              usernameController.text,
+                                              passwordController.text,
+                                            ]);
+                                          }
+                                        },
+                                        child: Text('ورود'),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
         });
   }
 }

@@ -14,7 +14,7 @@ import 'examples/resume.dart';
 const examples = <Example>[
   // Example('RÉSUMÉ', 'resume.dart', generateResume),
   // Example('DOCUMENT', 'document.dart', generateDocument),
-  Example('INVOICE', 'invoice.dart', generateInvoice),
+  Example('INVOICE', 'invoice.dart', generateInvoice, true),
   // Example('REPORT', 'report.dart', generateReport),
   // Example('CALENDAR', 'calendar.dart', generateCalendar),
   // Example('CERTIFICATE', 'certificate.dart', generateCertificate, true),

@@ -28,7 +28,7 @@ import 'package:image/image.dart' as im;
 import '../data.dart';
 
 Future<Uint8List> generateInvoice(
-    PdfPageFormat pageFormat, CustomData data) async {
+    PdfPageFormat pageFormat, CustomData data1) async {
   final lorem = pw.LoremText();
 
   final products = <Product>[
@@ -86,7 +86,7 @@ Future<Uint8List> generateInvoice(
     accentColor: PdfColors.blueGrey900,
   );
 
-  return await invoice.buildPdf(pageFormat);
+  return await invoice.buildPdf(pageFormat, data1);
 }
 
 class Invoice {
@@ -128,8 +128,10 @@ class Invoice {
 
   pw.Font? myFont;
   pw.ImageProvider? myLogo;
+  CustomData? data;
 
-  Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {
+  Future<Uint8List> buildPdf(PdfPageFormat pageFormat, CustomData data1) async {
+    data = data1;
     // Create a PDF document.
     final doc = pw.Document();
 
@@ -279,7 +281,7 @@ class Invoice {
                     height: 20,
                     child: pw.FittedBox(
                       child: pw.Text(
-                        'شماره: ${_formatCurrency(_grandTotal)}',
+                        'شماره: ${data?.name}',
                         style: pw.TextStyle(
                           color: baseColor,
                           fontStyle: pw.FontStyle.normal,

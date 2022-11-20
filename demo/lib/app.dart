@@ -725,130 +725,124 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                 ),
                                 Column(
                                   children: [
-                                    Row(
+                                    Column(
                                       children: [
-                                        Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: generalText(
-                                                  'امضاء تحویل دهنده:',
-                                                  color: Colors.white),
-                                            ),
-                                            _signatureCanvasSender,
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                _myElevatedButtonWidget(
-                                                  'پاک کردن',
-                                                  () {
-                                                    // CLEAR CANVAS
-                                                    _controllerSignatureSender
-                                                        .clear();
-                                                  },
-                                                  height: 50,
-                                                  width: 200,
-                                                ),
-                                                _myElevatedButtonWidget(
-                                                  'ذخیره امضاء',
-                                                  () {
-                                                    // EXPORT BYTES AS PNG
-                                                    // The exported image will be limited to the drawn area
-                                                    _controllerSignatureSender
-                                                        .toPngBytes()
-                                                        .then((value) async {
-                                                      // callback variant
-
-                                                      imageInUnit8ListSender =
-                                                          value!; // store unit8List image here ;
-                                                      final appDocDir =
-                                                          await getApplicationDocumentsDirectory();
-                                                      final appDocPath =
-                                                          appDocDir.path;
-                                                      final file1 = File(
-                                                          appDocPath +
-                                                              '/' +
-                                                              'image.png');
-                                                      print(
-                                                          'Save as file ${file1.path} ...');
-                                                      await file1.writeAsBytes(
-                                                          imageInUnit8ListSender!);
-                                                      await OpenFile.open(
-                                                          file1.path);
-
-                                                      // print(uint8ListTob64(value));
-                                                    });
-                                                    // async variant
-                                                  },
-                                                  height: 50,
-                                                  width: 200,
-                                                ),
-                                              ],
-                                            )
-                                          ],
+                                        Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: generalText(
+                                              'امضاء تحویل دهنده:',
+                                              color: Colors.white),
                                         ),
-                                        Column(
+                                        _signatureCanvasSender,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: generalText(
-                                                  'امضاء تحویل گینده:',
-                                                  color: Colors.white),
+                                            _myElevatedButtonWidget(
+                                              'پاک کردن',
+                                              () {
+                                                // CLEAR CANVAS
+                                                _controllerSignatureSender
+                                                    .clear();
+                                              },
+                                              height: 50,
+                                              width: 200,
                                             ),
-                                            _signatureCanvasReceiver,
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                _myElevatedButtonWidget(
-                                                  'پاک کردن',
-                                                  () {
-                                                    // CLEAR CANVAS
-                                                    _controllerSignatureReceiver
-                                                        .clear();
-                                                  },
-                                                  height: 50,
-                                                  width: 200,
-                                                ),
-                                                _myElevatedButtonWidget(
-                                                  'ذخیره امضاء',
-                                                  () {
-                                                    // EXPORT BYTES AS PNG
-                                                    // The exported image will be limited to the drawn area
-                                                    _controllerSignatureReceiver
-                                                        .toPngBytes()
-                                                        .then((value) async {
-                                                      // callback variant
+                                            _myElevatedButtonWidget(
+                                              'ذخیره امضاء',
+                                              () {
+                                                // EXPORT BYTES AS PNG
+                                                // The exported image will be limited to the drawn area
+                                                _controllerSignatureSender
+                                                    .toPngBytes()
+                                                    .then((value) async {
+                                                  // callback variant
 
-                                                      imageInUnit8ListReceiver =
-                                                          value!; // store unit8List image here ;
-                                                      final appDocDir =
-                                                          await getApplicationDocumentsDirectory();
-                                                      final appDocPath =
-                                                          appDocDir.path;
-                                                      final file1 = File(
-                                                          appDocPath +
-                                                              '/' +
-                                                              'image1.png');
-                                                      print(
-                                                          'Save as file ${file1.path} ...');
-                                                      await file1.writeAsBytes(
-                                                          imageInUnit8ListReceiver!);
-                                                      await OpenFile.open(
-                                                          file1.path);
+                                                  imageInUnit8ListSender =
+                                                      value!; // store unit8List image here ;
+                                                  final appDocDir =
+                                                      await getApplicationDocumentsDirectory();
+                                                  final appDocPath =
+                                                      appDocDir.path;
+                                                  final file1 = File(
+                                                      appDocPath +
+                                                          '/' +
+                                                          'image.png');
+                                                  print(
+                                                      'Save as file ${file1.path} ...');
+                                                  await file1.writeAsBytes(
+                                                      imageInUnit8ListSender!);
+                                                  await OpenFile.open(
+                                                      file1.path);
 
-                                                      // print(uint8ListTob64(value));
-                                                    });
-                                                    // async variant
-                                                  },
-                                                  height: 50,
-                                                  width: 200,
-                                                ),
-                                              ],
-                                            )
+                                                  // print(uint8ListTob64(value));
+                                                });
+                                                // async variant
+                                              },
+                                              height: 50,
+                                              width: 200,
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: generalText(
+                                              'امضاء تحویل گینده:',
+                                              color: Colors.white),
+                                        ),
+                                        _signatureCanvasReceiver,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            _myElevatedButtonWidget(
+                                              'پاک کردن',
+                                              () {
+                                                // CLEAR CANVAS
+                                                _controllerSignatureReceiver
+                                                    .clear();
+                                              },
+                                              height: 50,
+                                              width: 200,
+                                            ),
+                                            _myElevatedButtonWidget(
+                                              'ذخیره امضاء',
+                                              () {
+                                                // EXPORT BYTES AS PNG
+                                                // The exported image will be limited to the drawn area
+                                                _controllerSignatureReceiver
+                                                    .toPngBytes()
+                                                    .then((value) async {
+                                                  // callback variant
+
+                                                  imageInUnit8ListReceiver =
+                                                      value!; // store unit8List image here ;
+                                                  final appDocDir =
+                                                      await getApplicationDocumentsDirectory();
+                                                  final appDocPath =
+                                                      appDocDir.path;
+                                                  final file1 = File(
+                                                      appDocPath +
+                                                          '/' +
+                                                          'image1.png');
+                                                  print(
+                                                      'Save as file ${file1.path} ...');
+                                                  await file1.writeAsBytes(
+                                                      imageInUnit8ListReceiver!);
+                                                  await OpenFile.open(
+                                                      file1.path);
+
+                                                  // print(uint8ListTob64(value));
+                                                });
+                                                // async variant
+                                              },
+                                              height: 50,
+                                              width: 200,
+                                            ),
                                           ],
                                         )
                                       ],

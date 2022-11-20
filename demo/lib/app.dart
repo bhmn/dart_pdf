@@ -282,15 +282,15 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     // INITIALIZE. RESULT IS A WIDGET, SO IT CAN BE DIRECTLY USED IN BUILD METHOD
     final _signatureCanvasSender = Signature(
       controller: _controllerSignatureSender,
-      width: 200,
-      height: 200,
+      width: 300,
+      height: 300,
       backgroundColor: Colors.white,
     );
 
     final _signatureCanvasReceiver = Signature(
       controller: _controllerSignatureReceiver,
-      width: 200,
-      height: 200,
+      width: 300,
+      height: 300,
       backgroundColor: Colors.white,
     );
 

@@ -31,48 +31,7 @@ Future<Uint8List> generateInvoice(
     PdfPageFormat pageFormat, SendProductData data1) async {
   final lorem = pw.LoremText();
 
-  final products = <Product>[
-    Product('19874', "سیم کابل کت 6", 3.99, 2),
-    Product('19874', "سیم  کت 6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-    Product('19874', "سیم   6", 3.99, 2),
-
-    // Product('98452', lorem.sentence(6), 15, 2),
-    // Product('28375', lorem.sentence(4), 6.95, 3),
-    // Product('95673', lorem.sentence(3), 49.99, 4),
-    // Product('23763', lorem.sentence(2), 560.03, 1),
-    // Product('55209', lorem.sentence(5), 26, 1),
-    // Product('09853', lorem.sentence(5), 26, 1),
-    // Product('23463', lorem.sentence(5), 34, 1),
-    // Product('56783', lorem.sentence(5), 7, 4),
-    // Product('78256', lorem.sentence(5), 23, 1),
-    // Product('23745', lorem.sentence(5), 94, 1),
-    // Product('07834', lorem.sentence(5), 12, 1),
-    // Product('23547', lorem.sentence(5), 34, 1),
-    // Product('98387', lorem.sentence(5), 7.99, 2),
-  ];
+  final products = data1.products;
 
   final invoice = Invoice(
     invoiceNumber: '982347',
@@ -116,11 +75,6 @@ class Invoice {
   PdfColor get _baseTextColor => baseColor.isLight ? _lightColor : _darkColor;
 
   PdfColor get _accentTextColor => baseColor.isLight ? _lightColor : _darkColor;
-
-  double get _total =>
-      products.map<double>((p) => p.total).reduce((a, b) => a + b);
-
-  double get _grandTotal => _total * (1 + tax);
 
   String? _logo;
 
@@ -338,7 +292,7 @@ class Invoice {
                   height: 20,
                   child: pw.FittedBox(
                     child: pw.Text(
-                      'تاریخ: ${_formatCurrency(_grandTotal)}',
+                      data!.formReceiver,
                       style: pw.TextStyle(
                         color: baseColor,
                         fontStyle: pw.FontStyle.normal,
@@ -355,7 +309,7 @@ class Invoice {
                   height: 20,
                   child: pw.FittedBox(
                     child: pw.Text(
-                      'شماره: ${_formatCurrency(_grandTotal)}',
+                      'مهندسین مشاور ارتباط گستران شرق',
                       style: pw.TextStyle(
                         color: baseColor,
                         fontStyle: pw.FontStyle.normal,
@@ -426,7 +380,7 @@ class Invoice {
               height: 30,
               child: pw.FittedBox(
                 child: pw.Text(
-                  'تاریخ: ${_formatCurrency(_grandTotal)}',
+                  'تاریخ: ',
                   style: pw.TextStyle(
                     color: baseColor,
                     fontStyle: pw.FontStyle.normal,
@@ -443,7 +397,7 @@ class Invoice {
               height: 30,
               child: pw.FittedBox(
                 child: pw.Text(
-                  'شماره: ${_formatCurrency(_grandTotal)}',
+                  'شماره: ',
                   style: pw.TextStyle(
                     color: baseColor,
                     fontStyle: pw.FontStyle.normal,
@@ -499,7 +453,7 @@ class Invoice {
             height: 30,
             child: pw.FittedBox(
               child: pw.Text(
-                'تاریخ: ${_formatCurrency(_grandTotal)}',
+                'تاریخ: ',
                 style: pw.TextStyle(
                   color: baseColor,
                   fontStyle: pw.FontStyle.normal,
@@ -516,7 +470,7 @@ class Invoice {
             height: 30,
             child: pw.FittedBox(
               child: pw.Text(
-                'شماره: ${_formatCurrency(_grandTotal)}',
+                'شماره: ',
                 style: pw.TextStyle(
                   color: baseColor,
                   fontStyle: pw.FontStyle.normal,
@@ -559,7 +513,7 @@ class Invoice {
                       child: pw.Row(
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         children: [
-                          pw.Text(_formatCurrency(_grandTotal)),
+                          pw.Text(data!.sum.toString()),
                           pw.Text('مجموع:', textAlign: pw.TextAlign.right),
                         ],
                       ),
@@ -567,7 +521,7 @@ class Invoice {
                   ),
                 ]),
                 pw.Container(
-                  decoration: pw.BoxDecoration(
+                  decoration: const pw.BoxDecoration(
                     border: pw.Border(top: pw.BorderSide(color: _darkColor)),
                   ),
                   child: pw.Row(children: [
@@ -727,33 +681,33 @@ String _formatDate(DateTime date) {
   return format.format(date);
 }
 
-class Product {
-  const Product(
-    this.sku,
-    this.productName,
-    this.price,
-    this.quantity,
-  );
+// class Product {
+//   const Product(
+//     this.sku,
+//     this.productName,
+//     this.price,
+//     this.quantity,
+//   );
 
-  final String sku;
-  final String productName;
-  final double price;
-  final int quantity;
-  double get total => price * quantity;
+//   final String sku;
+//   final String productName;
+//   final double price;
+//   final int quantity;
+//   double get total => price * quantity;
 
-  String getIndex(int index) {
-    switch (index) {
-      case 0:
-        return sku;
-      case 1:
-        return productName;
-      case 2:
-        return _formatCurrency(price);
-      case 3:
-        return quantity.toString();
-      case 4:
-        return _formatCurrency(total);
-    }
-    return '';
-  }
-}
+//   String getIndex(int index) {
+//     switch (index) {
+//       case 0:
+//         return sku;
+//       case 1:
+//         return productName;
+//       case 2:
+//         return _formatCurrency(price);
+//       case 3:
+//         return quantity.toString();
+//       case 4:
+//         return _formatCurrency(total);
+//     }
+//     return '';
+//   }
+// }

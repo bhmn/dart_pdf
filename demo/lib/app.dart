@@ -20,12 +20,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:printing_demo/my_widgets.dart';
 import 'package:url_launcher/url_launcher.dart' as ul;
 
 import 'data_send_product.dart';
@@ -43,7 +45,8 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   int _tab = 0;
   TabController? _tabController;
-  var textDate = 'تاریخ';
+  var textDate = 'انتخاب تاریخ';
+  List<Product> products = <Product>[];
 
   PrintingInfo? printingInfo;
 
@@ -105,7 +108,12 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       askName(context).then((value) {
         if (value != null) {
           setState(() {
-            _data = SendProductData(formNumber: value[0], formDate: value[2]);
+            _data = SendProductData(
+                formNumber: value[0],
+                formDate: value[1],
+                formReceiver: value[2],
+                products: products,
+                sum: int.parse(value[3]));
             _hasData = true;
             _pending = false;
           });
@@ -232,10 +240,86 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     //       });
     // }
     final controller = TextEditingController();
-    final usernameController = TextEditingController();
-    final passwordController = TextEditingController();
+    final formNumberController = TextEditingController();
+    final formReceiverController = TextEditingController();
+
+    final productController = TextEditingController();
+    final productNumbersController = TextEditingController();
+    final productDescController = TextEditingController();
+
     final _formKey = GlobalKey<FormState>();
+    final _formKeyProduct = GlobalKey<FormState>();
+
     var selectedDate = DateTime.now();
+
+    Padding _myTextFieldWidget(TextEditingController controller, String label) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: TextFormField(
+          controller: controller,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'لطفا $label را وارد کنید';
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            border: const UnderlineInputBorder(),
+            labelText: '$label : ',
+          ),
+          style: const TextStyle(
+            fontFamily: 'VazirRegular',
+          ),
+        ),
+      );
+    }
+
+    Padding _myTextFieldNumberWidget(
+        TextEditingController controller, String label) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: TextFormField(
+          keyboardType: TextInputType.number,
+          inputFormatters: <TextInputFormatter>[
+            // for below version 2 use this
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+            // for version 2 and greater youcan also use this
+            FilteringTextInputFormatter.digitsOnly
+          ],
+          controller: controller,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'لطفا $label را وارد کنید';
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            border: const UnderlineInputBorder(),
+            labelText: '$label : ',
+          ),
+          style: const TextStyle(
+            fontFamily: 'VazirRegular',
+          ),
+        ),
+      );
+    }
+
+    _myElevatedButtonWidget(String text, VoidCallback onPress,
+        {double width = 150, double height = 50, Color? color = Colors.blue}) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              elevation: 2,
+              fixedSize: Size(width, height),
+              backgroundColor: color),
+          onPressed: () {
+            onPress();
+          },
+          child: Text(text),
+        ),
+      );
+    }
 
     Future<String?> _selectDate(BuildContext context) async {
       // final picked = await showDatePicker(
@@ -350,15 +434,15 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       // );
     }
 
-    String _datetime = '';
-    String _format = 'yyyy-mm-dd';
-    String _valuePiker = '';
+    // String _datetime = '';
+    // String _format = 'yyyy-mm-dd';
+    // String _valuePiker = '';
 
-    void _changeDatetime(int year, int month, int day) {
-      setState(() {
-        _datetime = '$year-$month-$day';
-      });
-    }
+    // void _changeDatetime(int year, int month, int day) {
+    //   setState(() {
+    //     _datetime = '$year-$month-$day';
+    //   });
+    // }
 
     /// Display date picker.
     return showGeneralDialog(
@@ -381,50 +465,27 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                   child: Form(
                     key: _formKey,
                     child: Center(
-                      child: ListView(
-                          scrollDirection: Axis.vertical,
-                          children: <Widget>[
-                            Flex(
-                              direction: Axis.vertical,
+                      child:
+                          ListView(scrollDirection: Axis.vertical, children: <
+                              Widget>[
+                        Flex(
+                          direction: Axis.vertical,
+                          children: [
+                            Column(
                               children: [
-                                Column(
+                                _myTextFieldWidget(
+                                  formNumberController,
+                                  'شماره فرم',
+                                ),
+                                Row(
                                   children: [
+                                    // ignore: prefer_const_constructors
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 16),
-                                      child: TextFormField(
-                                        controller: usernameController,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'لطفا شماره فرم را وارد کنید';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: const InputDecoration(
-                                          border: UnderlineInputBorder(),
-                                          labelText: 'شماره فرم: ',
-                                        ),
-                                        style: const TextStyle(
-                                          fontFamily: 'VazirRegular',
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 16),
-                                      child: TextFormField(
-                                        controller: passwordController,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'لطفا کلمه عبور خود را وارد کنید';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: const InputDecoration(
-                                          border: UnderlineInputBorder(),
-                                          labelText: 'کلمه عبور',
-                                        ),
-                                        style: const TextStyle(
+                                      child: const Text(
+                                        'تاریخ فرم:',
+                                        style: TextStyle(
                                           fontFamily: 'VazirRegular',
                                         ),
                                       ),
@@ -449,40 +510,191 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         ),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 16),
-                                      child: Text(textDate,
-                                          style: const TextStyle(
-                                              fontFamily: 'VazirRegular',
-                                              color: Colors.white)),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 16),
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            elevation: 2,
-                                            fixedSize: const Size(150, 50)),
-                                        onPressed: () {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            if (kDebugMode) {}
-                                            Navigator.of(context).pop([
-                                              usernameController.text,
-                                              passwordController.text,
-                                              textDate
-                                            ]);
-                                          }
-                                        },
-                                        child: Text('ورود'),
-                                      ),
-                                    ),
                                   ],
-                                )
+                                ),
+                                _myTextFieldWidget(
+                                  formReceiverController,
+                                  'گیرنده',
+                                ),
+                                const Divider(
+                                  height: 20,
+                                  color: Colors.amberAccent,
+                                ),
+                                Form(
+                                    key: _formKeyProduct,
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          const Text('مشخصات کالا'),
+                                          _myTextFieldWidget(
+                                            productController,
+                                            'شرح کالا',
+                                          ),
+                                          _myTextFieldNumberWidget(
+                                            productNumbersController,
+                                            'تعداد',
+                                          ),
+                                          _myTextFieldWidget(
+                                            productDescController,
+                                            'توضیحات',
+                                          ),
+                                          _myElevatedButtonWidget(
+                                            'افزودن به لیست',
+                                            () {
+                                              if (!_formKeyProduct.currentState!
+                                                  .validate()) {
+                                                return;
+                                              }
+
+                                              setState(() {
+                                                products.add(
+                                                  Product(
+                                                      rowNumber:
+                                                          (products.length + 1)
+                                                              .toString(),
+                                                      product: productController
+                                                          .text,
+                                                      productNumber: int.parse(
+                                                          productNumbersController
+                                                              .text),
+                                                      productDescription:
+                                                          productDescController
+                                                              .text),
+                                                );
+                                                productController.clear();
+                                                productNumbersController
+                                                    .clear();
+                                                productDescController.clear();
+
+                                                if (kDebugMode) {
+                                                  print(products[0].product);
+                                                }
+                                              });
+                                            },
+                                            height: 40,
+                                            width: 150,
+                                          ),
+                                          ListView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const ClampingScrollPhysics(),
+                                            scrollDirection: Axis.vertical,
+                                            itemCount: products.length,
+                                            itemBuilder:
+                                                (BuildContext ctxt, int index) {
+                                              /// return Text(entries[index]);
+                                              // ignore: prefer_const_constructors
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(2.0),
+                                                child: Card(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  elevation: 2.0,
+                                                  // ignore: prefer_const_constructors
+                                                  child: InkWell(
+                                                    splashColor: Colors.blue
+                                                        .withAlpha(30),
+                                                    onTap: () {},
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              10.0),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                          Column(
+                                                            // ignore: prefer_const_literals_to_create_immutables
+                                                            children: <Widget>[
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                // ignore: prefer_const_literals_to_create_immutables
+                                                                children: <
+                                                                    Widget>[
+                                                                  generalText(
+                                                                      'شرح کالا: '),
+                                                                  generalText(
+                                                                      products[
+                                                                              index]
+                                                                          .product,
+                                                                      color: Colors
+                                                                          .blue),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                // ignore: prefer_const_literals_to_create_immutables
+                                                                children: <
+                                                                    Widget>[
+                                                                  generalText(
+                                                                    'تعداد: ',
+                                                                  ),
+                                                                  generalText(
+                                                                    products[
+                                                                            index]
+                                                                        .productNumber
+                                                                        .toString(),
+                                                                    color: Colors
+                                                                        .blue,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                // ignore: prefer_const_literals_to_create_immutables
+                                                                children: <
+                                                                    Widget>[
+                                                                  generalText(
+                                                                    'توضیحات: ',
+                                                                  ),
+                                                                  generalText(
+                                                                    products[
+                                                                            index]
+                                                                        .productDescription,
+                                                                    color: Colors
+                                                                        .blue,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    )),
+                                _myElevatedButtonWidget('ورود', () {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (kDebugMode) {}
+                                    var sum = 0;
+                                    for (var product in products) {
+                                      sum += product.productNumber;
+                                    }
+                                    print(sum);
+                                    Navigator.of(context).pop([
+                                      formNumberController.text,
+                                      textDate,
+                                      formReceiverController.text,
+                                      sum.toString(),
+                                    ]);
+                                  }
+                                }),
                               ],
-                            ),
-                          ]),
+                            )
+                          ],
+                        ),
+                      ]),
                     ),
                   ),
                 ),

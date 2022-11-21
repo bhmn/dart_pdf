@@ -415,12 +415,16 @@ class Invoice {
                             pw.Padding(
                               padding: const pw.EdgeInsets.all(10.0),
                               child: pw.Image(
+                                width: 100,
+                                height: 100,
                                 pw.MemoryImage(uint8ListReceiver!),
                               ),
                             ),
                             pw.Padding(
                               padding: const pw.EdgeInsets.all(10.0),
                               child: pw.Image(
+                                width: 100,
+                                height: 100,
                                 pw.MemoryImage(uint8ListSender!),
                               ),
                             ),

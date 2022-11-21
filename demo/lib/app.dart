@@ -49,8 +49,8 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   TabController? _tabController;
   var textDate = 'انتخاب تاریخ';
   List<Product> products = <Product>[];
-  late final Uint8List imageInUnit8ListSender;
-  late final Uint8List imageInUnit8ListReceiver;
+  Uint8List? imageInUnit8ListSender;
+  Uint8List? imageInUnit8ListReceiver;
 
   // Initialise a controller. It will contains signature points, stroke width and pen color.
 // It will allow you to interact with the widget
@@ -231,13 +231,13 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     );
   }
 
-  void _showSources() {
-    ul.launchUrl(
-      Uri.parse(
-        'https://github.com/DavBfr/dart_pdf/blob/master/demo/lib/examples/${examples[_tab].file}',
-      ),
-    );
-  }
+  // void _showSources() {
+  //   ul.launchUrl(
+  //     Uri.parse(
+  //       'https://github.com/DavBfr/dart_pdf/blob/master/demo/lib/examples/${examples[_tab].file}',
+  //     ),
+  //   );
+  // }
 
   Future<List<String>?> askName(BuildContext context) {
     //   return showDialog<String>(
@@ -748,40 +748,16 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                               height: 50,
                                               width: 200,
                                             ),
-                                            _myElevatedButtonWidget(
-                                              'ذخیره امضاء',
-                                              () {
-                                                // EXPORT BYTES AS PNG
-                                                // The exported image will be limited to the drawn area
-                                                _controllerSignatureSender
-                                                    .toPngBytes()
-                                                    .then((value) async {
-                                                  // callback variant
-
-                                                  imageInUnit8ListSender =
-                                                      value!; // store unit8List image here ;
-                                                  final appDocDir =
-                                                      await getApplicationDocumentsDirectory();
-                                                  final appDocPath =
-                                                      appDocDir.path;
-                                                  final file1 = File(
-                                                      appDocPath +
-                                                          '/' +
-                                                          'image.png');
-                                                  print(
-                                                      'Save as file ${file1.path} ...');
-                                                  await file1.writeAsBytes(
-                                                      imageInUnit8ListSender!);
-                                                  await OpenFile.open(
-                                                      file1.path);
-
-                                                  // print(uint8ListTob64(value));
-                                                });
-                                                // async variant
-                                              },
-                                              height: 50,
-                                              width: 200,
-                                            ),
+                                            // _myElevatedButtonWidget(
+                                            //   'ذخیره امضاء',
+                                            //   () {
+                                            //     // EXPORT BYTES AS PNG
+                                            //     // The exported image will be limited to the drawn area
+                                            //    // async variant
+                                            //   },
+                                            //   height: 50,
+                                            //   width: 200,
+                                            // ),
                                           ],
                                         )
                                       ],
@@ -809,40 +785,16 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                               height: 50,
                                               width: 200,
                                             ),
-                                            _myElevatedButtonWidget(
-                                              'ذخیره امضاء',
-                                              () {
-                                                // EXPORT BYTES AS PNG
-                                                // The exported image will be limited to the drawn area
-                                                _controllerSignatureReceiver
-                                                    .toPngBytes()
-                                                    .then((value) async {
-                                                  // callback variant
-
-                                                  imageInUnit8ListReceiver =
-                                                      value!; // store unit8List image here ;
-                                                  final appDocDir =
-                                                      await getApplicationDocumentsDirectory();
-                                                  final appDocPath =
-                                                      appDocDir.path;
-                                                  final file1 = File(
-                                                      appDocPath +
-                                                          '/' +
-                                                          'image1.png');
-                                                  print(
-                                                      'Save as file ${file1.path} ...');
-                                                  await file1.writeAsBytes(
-                                                      imageInUnit8ListReceiver!);
-                                                  await OpenFile.open(
-                                                      file1.path);
-
-                                                  // print(uint8ListTob64(value));
-                                                });
-                                                // async variant
-                                              },
-                                              height: 50,
-                                              width: 200,
-                                            ),
+                                            // _myElevatedButtonWidget(
+                                            //   'ذخیره امضاء',
+                                            //   () {
+                                            //     // EXPORT BYTES AS PNG
+                                            //     // The exported image will be limited to the drawn area
+                                            //     // async variant
+                                            //   },
+                                            //   height: 50,
+                                            //   width: 200,
+                                            // ),
                                           ],
                                         )
                                       ],
@@ -853,18 +805,63 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                   'ثبت و پیش نمایش فرم',
                                   () {
                                     if (_formKey.currentState!.validate()) {
-                                      if (kDebugMode) {}
                                       var sum = 0;
                                       for (var product in products) {
                                         sum += product.productNumber;
                                       }
                                       print(sum);
-                                      Navigator.of(context).pop([
-                                        formNumberController.text,
-                                        textDate,
-                                        formReceiverController.text,
-                                        sum.toString(),
-                                      ]);
+                                      //---------------------------------------------///
+                                      //save signature
+                                      _controllerSignatureSender
+                                          .toPngBytes()
+                                          .then((value) async {
+                                        // callback variant
+
+                                        imageInUnit8ListSender =
+                                            value!; // store unit8List image here ;
+                                        final appDocDir =
+                                            await getApplicationDocumentsDirectory();
+                                        final appDocPath = appDocDir.path;
+                                        final file1 = File(
+                                            appDocPath + '/' + 'image.png');
+                                        print('Save as file ${file1.path} ...');
+                                        await file1.writeAsBytes(
+                                            imageInUnit8ListSender!);
+                                        await OpenFile.open(file1.path);
+
+                                        // print(uint8ListTob64(value));
+                                      });
+                                      //end save signature
+                                      _controllerSignatureReceiver
+                                          .toPngBytes()
+                                          .then((value) async {
+                                        // callback variant
+
+                                        imageInUnit8ListReceiver =
+                                            value!; // store unit8List image here ;
+                                        final appDocDir =
+                                            await getApplicationDocumentsDirectory();
+                                        final appDocPath = appDocDir.path;
+                                        final file1 = File(
+                                            appDocPath + '/' + 'image1.png');
+                                        print('Save as file ${file1.path} ...');
+                                        await file1.writeAsBytes(
+                                            imageInUnit8ListReceiver!);
+                                        await OpenFile.open(file1.path);
+
+                                        // print(uint8ListTob64(value));
+
+                                        Navigator.of(context).pop([
+                                          formNumberController.text,
+                                          textDate,
+                                          formReceiverController.text,
+                                          sum.toString(),
+                                        ]);
+                                      });
+                                      //end save signature
+                                      //---------------------------------------------///
+
+                                      if (kDebugMode) {}
                                     }
                                   },
                                   height: 50,
